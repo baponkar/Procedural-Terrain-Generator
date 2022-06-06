@@ -6,4 +6,4 @@
  
  ![Screenshot](Screenshots/generated_terrain.png)
  
- Credit @ ![Brackeys](https://www.youtube.com/c/Brackeys)
+ Credit @ [Brackeys](https://www.youtube.com/c/Brackeys)
