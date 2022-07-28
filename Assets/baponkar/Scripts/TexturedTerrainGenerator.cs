@@ -4,6 +4,7 @@
 //Reference : https://www.youtube.com/watch?v=64NblGkAabk
 //Info : Mesh Filter Containing the mesh data and Mesh Renderer rendering the mesh in gameview
 //Without backface cull the generated mesh show only one side
+//Last Update : 27/06/2022
 
 
 
@@ -12,8 +13,18 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(MeshFilter))]
+
+//[ExecuteInEditMode]
 public class TexturedTerrainGenerator : MonoBehaviour
 {
+    public bool randomize;
+    [Range(0.001f,2.0f)]
+    public float seedX = 0.5f;
+    [Range(0.001f,2.0f)]
+    public float seedY = 0.5f;
+    [Range(1f,20f)]
+    public float frequency = 1;
+
     Vector3 startPos;
     Mesh mesh;
 
@@ -53,6 +64,15 @@ public class TexturedTerrainGenerator : MonoBehaviour
         meshCollider.sharedMesh = mesh;
    
     }
+    void Update()
+    {
+        if(randomize)
+        {
+            //CreateShape();
+            UpdateMesh();
+            randomize = false;
+        }
+    }
 
     void CreateShape()
     {
@@ -64,14 +84,15 @@ public class TexturedTerrainGenerator : MonoBehaviour
         {
             for(int x=0; x<= xSize; x++)
             {
-                float y = Mathf.PerlinNoise(x*0.1f, z*0.1f) * 10f;
-                vertices[i] = new Vector3(x, y,z) + startPos;
+                float y = Mathf.PerlinNoise(x*seedX, z*seedY) * frequency;
+                vertices[i] = new Vector3(x, y, z) + startPos;
 
+                //Getting max and min height of the terrain
                 if(y > maxTerrainHeight)
                 {
                     maxTerrainHeight = y;
                 }
-                if(y<minTerrainHeight)
+                if(y < minTerrainHeight)
                 {
                     minTerrainHeight = y;
                 }
@@ -80,15 +101,14 @@ public class TexturedTerrainGenerator : MonoBehaviour
             
         }
 
-        triangles = new int [xSize*zSize*6];
+        triangles = new int [xSize * zSize * 6]; //2 triangles per square * 3 vertices per triangle * 6 squares per row
         int vert = 0;
         int tris = 0;
 
-        for(int z=0;z<zSize;z++)
+        for(int z=0; z<zSize; z++)
         {
-            for(int x= 0;x< xSize;x++)
+            for(int x= 0; x< xSize; x++)
             {
-                
                 triangles[tris + 0] = vert+ 0;
                 triangles[tris + 1] = vert + xSize + 1;
                 triangles[tris + 2] = vert + 1;
